@@ -1,0 +1,98 @@
+---
+title: "JavaScript Local Storage"
+publishedAt: "2022/11/18"
+description: "`localStorage` is a read-only property that allows us to access a Storage object for the Document 's origin with no expiration date."
+status: "published"
+---
+
+# What is Local Storage?
+
+`LocalStorage` is a read-only property that allows us to access a Storage object of the site or apps,
+`localStorage` is similer to `sessionStorag`e but without expiration date.
+The data stored in the `localStorage` object will not be deleted when the browser is closed,
+and will be available the next day, week, or year.
+The key-value that stores in the `localStorage` use UTF-16 string format.
+
+# Where does the data stored?
+
+The data stored in the `localStorage` is stored in the browser, and the data is not sent to the server.
+
+# How to use Local Storage?
+
+## Set a key-value pair
+
+You can set item key-value by using `setItem` method.
+
+```js
+localStorage.setItem("key", "value");
+```
+
+you can also set item key-value by using `localStorage` object.
+
+```js
+localStorage.key = "value";
+```
+
+_you can store any type of data in the `localStorage` object, but it will be converted to a string._
+
+## Get a value
+
+You can get item value by using `getItem` method.
+_if there is no key with name `key` in the `localStorage` object, it will return `null`._
+
+```js
+localStorage.getItem("key");
+```
+
+you can also get item value by using `localStorage` object.
+_if there is no key with name `key` in the `localStorage` object, it will return `undefined`._
+
+```js
+localStorage.key;
+```
+
+## Remove a key-value pair
+
+You can remove item value by using `removeItem` method.
+
+```js
+localStorage.removeItem("key");
+```
+
+you can also remove item value by using `localStorage` object.
+
+```js
+delete localStorage.key;
+```
+
+## Clear all key-value pairs
+
+You can clear all key-value pairs by using `clear` method.
+
+```js
+localStorage.clear();
+```
+
+## Get name of key by index
+
+You can get all keys by using `key` method and pass index number of the key.
+
+```js
+localStorage.key(0);
+```
+
+# Limitations of localStorage
+
+The `localStorage` object has some limitations:
+
+- The `localStorage` object is synchronous.
+- The `localStorage` object is limited to 5MB.
+- The `localStorage` object is accessible from all windows of the same origin.
+- The `localStorage` object is accessible from all iframes of the same origin.
+- The `localStorage` object is accessible from all workers of the same origin.
+
+# Resources
+
+- [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+- [W3Schools](https://www.w3schools.com/html/html5_webstorage.asp)
+- [JavaScript.info](https://javascript.info/localstorage)

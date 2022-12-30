@@ -1,91 +1,71 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
+import Image from "next/image";
+import AvatarImage from "@images/avatar.jpg";
+import Link from "next/link";
+import { Repo } from "types/github";
+import RepoCard from "@components/RepoCard";
 
-const inter = Inter({ subsets: ['latin'] })
+async function getData(): Promise<Repo[]> {
+  const res = await fetch("https://api.github.com/users/yanalshoubaki/repos", {
+    headers: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+    },
+  });
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch data");
+  }
+  return res.json();
+}
 
-export default function Home() {
+export default async function Page() {
+  const repos = await getData();
+  const title = "Hi 👋, I'm Yanal Shoubaki";
+  const subtitle =
+    "I'm a software developer at sprinitve,\n and living in Amman, JO.";
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
+    <div>
+      <div className="relative flex items-center justify-center my-8">
+        <div className="flex flex-col items-center justify-center relative z-[2]">
+          <div>
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+              src={AvatarImage.src}
+              width={150}
+              height={150}
+              className="inline-block rounded-full"
+              alt="Yanal Shoubaki"
             />
-          </a>
+          </div>
+          <div className="flex flex-col mt-8 items-center justify-center w-full font-light text-center space-y-4">
+            <h1 className="mb-2 text-3xl font-bold dark:text-secondary-main text-primary-main sm:text-4xl lg:text-5xl md:text-center">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="w-11/12 text-xl text-primary-main dark:text-secondary-main sm:text-2xl lg:text-3xl sm:w-5/6 md:w-11/12 lg:w-4/5 xl:w-3/5">
+                {subtitle}
+              </p>
+            )}
+            <Link href="/blogs">
+              <span className="px-4 py-2 my-4 rounded-sm shadow-md bg-primary-main text-secondary-main dark:bg-secondary-main dark:text-primary-main">
+                My Blog
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
+      <div className="flex flex-col items-center w-2/4 mx-auto  relative z-[3]">
+        <h3 className="my-6 text-2xl font-bold  text-primary-main dark:text-secondary-main">
+          Open Source Project
+        </h3>
+        <div>
+          <div className="grid grid-cols-1 lg:grid-cols-3  gap-2 md:grid-cols-2">
+            {repos
+              .filter((repo) => repo.fork == false)
+              .map((repo) => (
+                <RepoCard data={repo} key={repo.id} />
+              ))}
+          </div>
         </div>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }

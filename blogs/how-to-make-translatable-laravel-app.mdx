@@ -1,0 +1,246 @@
+---
+title: "How to make translatable laravel app"
+publishedAt: "2022/09/28"
+description: "A trait to make Eloquent models translatable"
+status: "published"
+---
+
+Use these methods to easily make translatable on model attributes in Laravel
+
+This article will explain the different ways to automatically translate eloquent model attributes while accessing or retrieving or create them.
+
+There are several ways to achieve this, and we’ll discuss them along with their quirks in this article.
+
+There are many packages do this work, my favorite package is https://github.com/spatie/laravel-translatable.
+
+This package have many methods the will give us an easy way to translate selected attributes.
+
+## Prerequisites and setup
+
+This tutorial assumes you are fairly experienced with Laravel (note that this tutorial uses Laravel 7.x).
+
+Of course, to begin, we have to have our development environment set up. First, install the package:
+
+You can install the package via composer:
+
+```bash
+composer require spatie/laravel-Translatable
+```
+
+If you want to have another fallback_locale than the app fallback locale (see config/app.php), you could publish the config file:
+
+```php
+php artisan vendor:publish --provider="Spatie\Translatable\TranslatableServiceProvider"
+```
+
+In your config folder you will find file name : translatable.php
+
+```php showLineNumbers title="config/translatable.php" {7}
+<?php
+
+return [
+    /*
+     * If a translation has not been set for a given locale, use this locale instead.
+     */
+    'fallback_locale' => 'en',
+];
+```
+
+## Making a model translatable
+
+The required steps to make a model translatable are:
+First, you need to add the Spatie\Translatable\HasTranslations-trait.
+Next, you should create a public property $translatable which holds an array with all the names of attributes you wish to make translatable.
+
+Finally, you should make sure that all translatable attributes are set to the text-datatype in your database. If your database supports json-columns, use that.
+
+Here’s an example of a prepared model:
+
+```php showLineNumbers title="app/Models/Post.php" {6-8}
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
+
+class Post extends Model
+{
+    use HasTranslations;
+
+    public $translatable = ['name', 'text'];
+
+}
+```
+
+now we need to select the attributes that we need to translate it:
+
+```php
+public $translatable = ['name', 'text'];
+```
+
+## Available methods
+
+Getting a translation
+The easiest way to get a translation for the current locale is to just get the property for the translated attribute. For example (given that name is a translatable attribute):
+
+```php
+$post->name; // get name attribute
+```
+
+You can also use this method:
+
+```php
+public function getTranslation(string $attributeName, string $locale, bool $useFallbackLocale = true) : string
+```
+
+this method well get name attribute translated by locale language you choose.
+
+## Getting all translations
+
+You can get all translations by calling `getTranslations()` without an argument:
+
+```php
+$post->getTranslations();
+```
+
+Or you can use the accessor : `$post->translations`
+
+## Setting a translation
+
+The easiest way to set a translation for the current locale is to just set the property for a translatable attribute. For example (given that name is a translatable attribute):
+
+```php
+$post->name = 'new post'
+```
+
+That will generate a json text like this : `{"en": "new post"}` inside name column in database table.
+for create multi translation:
+
+```php
+$post->name = ['en' => 'new post', 'ar' => 'موضوع جديد'];
+```
+
+To set a translation for a specific locale you can use this method:
+
+```php
+public function setTranslation(string $attributeName, string $locale, string $value)
+```
+
+To actually save the translation, don’t forget to save your model.
+
+```php
+$post->setTranslation('name', 'en', 'Updated name in English');
+$post->setTranslation('name', 'ar', 'Updated name in Arabic')
+$post->save();
+```
+
+## Forgetting a translation
+
+You can forget a translation for a specific field:
+
+```php
+public function forgetTranslation(string $attributeName, string $locale)
+```
+
+example :
+
+```php
+$post->forgetTranslation('name', 'ar')
+```
+
+You can forget all translations for a specific locale:
+
+```php
+public function forgetAllTranslations(string $locale)
+```
+
+example :
+
+```php
+$post->forgetAllTranslations('ar')
+```
+
+## Getting all translations in one go
+
+```php
+public function getTranslations(string $attributeName): array
+```
+
+example :
+
+```php
+$post->getTranslations('name')
+```
+
+## Getting the specified translations in one go
+
+You can filter the translations by passing an array of locales:
+
+```php
+public function getTranslations(string $attributeName, array $allowedLocales): array
+```
+
+example :
+
+```php
+$post->getTranslations('name', ['en', 'ar'])
+```
+
+## Replace translations in one go
+
+You can replace all the translations for a single key using this method:
+
+```php
+public function replaceTranslations(string $key, array $translations)
+$newTranslations = ['en' => 'hello'];
+$post->replaceTranslations('hello', $newTranslations);
+$post->getTranslations(); // ['en' => 'hello']
+```
+
+## Setting the model locale
+
+The default locale used to translate models is the application locale, however it can sometimes be handy to use a custom locale.
+
+```php
+$post = Post::firstOrFail()->setLocale('en')
+$post->name; // Will return `en` translation
+$post->name = "hello"; // will set the `en` translation
+```
+
+Alternatively, you can use using locale static method:
+
+```php
+$newsItem = Post::usingLocale('en')->create([
+    'name' => 'hello',
+]);
+
+```
+
+## Creating models
+
+You can immediately set translations when creating a model. Here’s an example:
+
+```php
+Post::create([
+    'name' => [
+        'en' => 'Name in English',
+        'ar' => 'الأسم بالعربي'
+    ],
+]);
+```
+
+## Querying translatable attributes
+
+If you’re using MySQL 5.7 or above, it’s recommended that you use the json data type for housing translations in the db.
+This will allow you to query these columns like this:
+
+```php
+ Post::where('name->en', 'Name in English')->get();
+```
+
+you can set translation using `app()->setLocale('en')` , this an easy way to get translation.
+
+```php
+app()->setLocale('en')
+$post->name; // will get 'en' translation
+$post->name = 'hello' // will set 'en' translation
+```
+
+resource : [https://github.com/spatie/laravel-translatable](https://github.com/spatie/laravel-translatable)
