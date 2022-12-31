@@ -5,9 +5,10 @@ import { Repo } from "types/github";
 import RepoCard from "@components/RepoCard";
 
 async function getData(): Promise<Repo[]> {
-  const res = await fetch("https://api.github.com/users/yanalshoubaki/repos", {
+  const res = await fetch(process.env.APP_URL + "/api/repos", {
     headers: {
-      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
   });
   if (!res.ok) {
@@ -52,20 +53,20 @@ export default async function Page() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center w-2/4 mx-auto  relative z-[3]">
-        <h3 className="my-6 text-2xl font-bold  text-primary-main dark:text-secondary-main">
-          Open Source Project
-        </h3>
-        <div>
-          <div className="grid grid-cols-1 lg:grid-cols-3  gap-2 md:grid-cols-2">
-            {repos
-              .filter((repo) => repo.fork == false)
-              .map((repo) => (
+      {repos.length > 0 && (
+        <div className="flex flex-col items-center w-2/4 mx-auto  relative z-[3]">
+          <h3 className="my-6 text-2xl font-bold  text-primary-main dark:text-secondary-main">
+            Open Source Project
+          </h3>
+          <div>
+            <div className="grid grid-cols-1 lg:grid-cols-3  gap-2 md:grid-cols-2">
+              {repos.map((repo) => (
                 <RepoCard data={repo} key={repo.id} />
               ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

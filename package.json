@@ -1,7 +1,14 @@
 {
   "name": "personal",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Personal website of @yanalshoubaki built with nextjs 13",
+  "keywords": [
+    "nextjs",
+    "contentlayer",
+    "tailwindcss",
+    "typescript"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
