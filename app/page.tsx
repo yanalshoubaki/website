@@ -5,17 +5,28 @@ import { Repo } from "types/github";
 import RepoCard from "@components/RepoCard";
 
 async function getData(): Promise<Repo[]> {
-  const res = await fetch(process.env.APP_URL + "/api/repos", {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  });
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
+  try {
+    const response = await fetch(
+      `https://api.github.com/users/yanalshoubaki/repos`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+      console.log(`Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`);
+    if (!response.ok) {
+      // This will activate the closest `error.js` Error Boundary
+      throw new Error("Failed to fetch data");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
   }
-  return res.json();
 }
 
 export default async function Page() {
@@ -54,7 +65,7 @@ export default async function Page() {
         </div>
       </div>
       {repos.length > 0 && (
-        <div className="flex flex-col items-center w-2/4 mx-auto  relative z-[3]">
+        <div className="flex flex-col items-center w-3/4 md:2/4 mx-auto  relative z-[3]">
           <h3 className="my-6 text-2xl font-bold  text-primary-main dark:text-secondary-main">
             Open Source Project
           </h3>

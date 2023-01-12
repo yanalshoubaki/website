@@ -13,14 +13,14 @@ const RepoCard = ({ data }: Props) => {
       <div className="relative flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-primary-dark -mt-1">
+            <h2 className="text-xl font-bold text-primary-dark -mt-1 dark:text-secondary-light">
               {data.name}
             </h2>
           </div>
-          <p className="mt-3 text-gray-700 text-sm">{data.description}</p>
+          <p className="mt-3 text-primary-main dark:text-secondary-main text-sm">{data.description}</p>
         </div>
         <div className="mt-2 flex items-center">
-          <div className="mr-4 text-gray-700 text-sm flex flex-row items-center">
+          <div className="mr-4 text-primary-main dark:text-secondary-maintext-sm flex flex-row items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

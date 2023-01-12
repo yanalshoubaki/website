@@ -5,7 +5,7 @@ import React from "react";
 const Footer = () => {
   return (
     <footer className="flex flex-col items-center justify-center">
-      <p className="mt-8 text-gray-600">
+      <p className="mt-8 text-primary-main dark:text-secondary-light">
         Built with{" "}
         <a href="https://nextjs.org" className={LINK_STYLES}>
           Next.js
